@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>حسابداری شخصی مجید</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .box, .summary {
+      background: white;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px #ddd;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      box-sizing: border-box;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    button {
+      background: #222;
+      color: white;
+      cursor: pointer;
+    }
+
+    .income {
+      color: green;
+    }
+
+    .expense {
+      color: red;
+    }
+
+    .item {
+      border-bottom: 1px solid #ddd;
+      padding: 10px 0;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>💰 حسابداری شخصی</h1>
+
+  <div class="summary">
+    <h3>خلاصه حساب</h3>
+    <p>درآمد: <span class="income" id="totalIncome">0</span> افغانی</p>
+    <p>مصارف: <span class="expense" id="totalExpense">0</span> افغانی</p>
+    <p><strong>موجودی: <span id="balance">0</span> افغانی</strong></p>
+  </div>
+
+  <div class="box">
+    <h3>ثبت معامله</h3>
+
+    <select id="type">
+      <option value="income">درآمد</option>
+      <option value="expense">مصرف</option>
+    </select>
+
+    <input type="number" id="amount" placeholder="مبلغ به افغانی">
+
+    <input type="text" id="description" placeholder="توضیحات">
+
+    <button onclick="addTransaction()">ثبت</button>
+  </div>
+
+  <div class="box">
+    <h3>تاریخچه</h3>
+    <div id="transactions"></div>
+  </div>
+
+</div>
+
+<script>
+
+let transactions =
+  JSON.parse(localStorage.getItem("transactions")) || [];
+
+function addTransaction() {
+
+  const type = document.getElementById("type").value;
+  const amount = Number(document.getElementById("amount").value);
+  const description =
+    document.getElementById("description").value;
+
+  if (!amount || amount <= 0) {
+    alert("لطفاً مبلغ را وارد کنید.");
+    return;
+  }
+
+  transactions.push({
+    type: type,
+    amount: amount,
+    description: description,
+    date: new Date().toLocaleDateString("fa-AF")
+  });
+
+  localStorage.setItem(
+    "transactions",
+    JSON.stringify(transactions)
+  );
+
+  document.getElementById("amount").value = "";
+  document.getElementById("description").value = "";
+
+  showTransactions();
+}
+
+function showTransactions() {
+
+  let income = 0;
+  let expense = 0;
+
+  const list = document.getElementById("transactions");
+  list.innerHTML = "";
+
+  transactions.forEach((item) => {
+
+    if (item.type === "income") {
+      income += item.amount;
+    } else {
+      expense += item.amount;
+    }
+
+    const div = document.createElement("div");
+    div.className = "item";
+
+    div.innerHTML = `
+      <strong class="${item.type === "income" ? "income" : "expense"}">
+        ${item.type === "income" ? "درآمد" : "مصرف"}
+      </strong>
+      <br>
+      مبلغ: ${item.amount} افغانی
+      <br>
+      ${item.description || ""}
+      <br>
+      <small>${item.date}</small>
+    `;
+
+    list.appendChild(div);
+  });
+
+  document.getElementById("totalIncome").textContent = income;
+  document.getElementById("totalExpense").textContent = expense;
+  document.getElementById("balance").textContent =
+    income - expense;
+}
+
+showTransactions();
+
+</script>
+
+</body>
+  </html>
