@@ -113,11 +113,17 @@ function addTransaction() {
     return;
   }
 
+  const now = new Date();
+
   transactions.push({
     type: type,
     amount: amount,
     description: description,
-    date: new Date().toLocaleDateString("fa-AF")
+    date: now.toLocaleDateString("fa-AF"),
+    time: now.toLocaleTimeString("fa-AF", {
+      hour: "2-digit",
+      minute: "2-digit"
+    })
   });
 
   localStorage.setItem(
@@ -159,7 +165,9 @@ function showTransactions() {
       <br>
       ${item.description || ""}
       <br>
-      <small>${item.date}</small>
+      <small>📅 ${item.date}</small>
+      <br>
+      <small>🕐 ${item.time || ""}</small>
     `;
 
     list.appendChild(div);
@@ -176,4 +184,4 @@ showTransactions();
 </script>
 
 </body>
-  </html>
+</html>
